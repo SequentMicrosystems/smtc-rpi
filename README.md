@@ -1,6 +1,5 @@
 
-Command line interface, Python, Node-RED drivers for Eight Thermocouples DAQ HAT
-[![smtc-rpi](https://github.com/SequentMicrosystems/smtc-rpi/blob/main/readmeres/sequent%20.jpg)](https://www.sequentmicrosystems.com)
+[![smtc-rpi](readmeres/sequent%20.jpg)](https://www.sequentmicrosystems.com)
 
 # smtc-rpi
 
