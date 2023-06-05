@@ -1,0 +1,245 @@
+[
+    {
+        "id": "57c402f4fef1ebe2",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "b11b70a0668a10b2",
+        "type": "ui_chart",
+        "z": "57c402f4fef1ebe2",
+        "name": "",
+        "group": "7d636d9ef786c70b",
+        "order": 1,
+        "width": 12,
+        "height": 11,
+        "label": "chart",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "20",
+        "ymax": "280",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1430,
+        "y": 380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "0f76dcd485db53ac",
+        "type": "exec",
+        "z": "57c402f4fef1ebe2",
+        "command": "smtc 0 read 2",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 880,
+        "y": 400,
+        "wires": [
+            [
+                "97cc4ad935f431b8",
+                "929ffaa72cda6a80"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "ef108607f0c53345",
+        "type": "inject",
+        "z": "57c402f4fef1ebe2",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 580,
+        "y": 400,
+        "wires": [
+            [
+                "0f76dcd485db53ac"
+            ]
+        ]
+    },
+    {
+        "id": "97cc4ad935f431b8",
+        "type": "function",
+        "z": "57c402f4fef1ebe2",
+        "name": "function 1",
+        "func": "var msg1 = {};\n\nmsg1.topic = 'E type';\nmsg1.payload = msg.payload;\nreturn msg1;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1120,
+        "y": 380,
+        "wires": [
+            [
+                "b11b70a0668a10b2",
+                "d2326ed6f6f465bd"
+            ]
+        ]
+    },
+    {
+        "id": "d2326ed6f6f465bd",
+        "type": "debug",
+        "z": "57c402f4fef1ebe2",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1420,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "929ffaa72cda6a80",
+        "type": "exec",
+        "z": "57c402f4fef1ebe2",
+        "command": "smtc 0 read 3",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 1040,
+        "y": 600,
+        "wires": [
+            [
+                "46e0b4fb48c229e3",
+                "61a8a822b30f3c07"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "46e0b4fb48c229e3",
+        "type": "function",
+        "z": "57c402f4fef1ebe2",
+        "name": "function 2",
+        "func": "var msg1 = {};\n\nmsg1.topic = 'T type';\nmsg1.payload = msg.payload;\nreturn msg1;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1200,
+        "y": 520,
+        "wires": [
+            [
+                "b11b70a0668a10b2"
+            ]
+        ]
+    },
+    {
+        "id": "61a8a822b30f3c07",
+        "type": "exec",
+        "z": "57c402f4fef1ebe2",
+        "command": "smtc 0 read 4",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "",
+        "winHide": false,
+        "oldrc": false,
+        "name": "",
+        "x": 1000,
+        "y": 780,
+        "wires": [
+            [
+                "871ff41e996d659d"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "871ff41e996d659d",
+        "type": "function",
+        "z": "57c402f4fef1ebe2",
+        "name": "function 3",
+        "func": "var msg1 = {};\n\nmsg1.topic = 'K type';\nmsg1.payload = msg.payload;\nreturn msg1;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1240,
+        "y": 760,
+        "wires": [
+            [
+                "b11b70a0668a10b2"
+            ]
+        ]
+    },
+    {
+        "id": "7d636d9ef786c70b",
+        "type": "ui_group",
+        "name": "Default",
+        "tab": "27dd759ae353c79e",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "27dd759ae353c79e",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
