@@ -41,7 +41,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>
 ```
 
-More usage example in the [examples](../examples/) folder
+More usage example in the [examples](examples/) folder
 
 ## Functions prototype
 
