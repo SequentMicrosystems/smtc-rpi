@@ -34,10 +34,9 @@ If you use python3.x repace the last line with:
 Python 3.10.7 (main, Nov  7 2022, 22:59:03) [GCC 8.3.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import sm_tc
->>> rel = sm_tc.SMtc(0)
->>> rel.set_relay(1, 1)
->>> rel.get_all_relays()
-1
+>>> tc = sm_tc.SMtc(0)
+>>> tc.get_temp(1)
+26.5
 >>>
 ```
 
