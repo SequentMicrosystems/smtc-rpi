@@ -22,7 +22,7 @@
 
 #define VERSION_BASE	(int)1
 #define VERSION_MAJOR	(int)0
-#define VERSION_MINOR	(int)0
+#define VERSION_MINOR	(int)1
 
 #define UNUSED(X) (void)X      /* To avoid gcc/g++ warnings */
 
@@ -604,10 +604,7 @@ int doBoard(int argc, char *argv[])
 		0,
 		0};
 #endif	
-	u16 aux16 = 0;
 	s8 saux8 = 0;
-	float vIn = 0;
-	float vRasp = 0;
 	u8 buff[5] = {0, 0, 0, 0, 0};
 
 	dev = doBoardInit(atoi(argv[1]));
@@ -636,15 +633,6 @@ int doBoard(int argc, char *argv[])
 			exit(1);
 		}
 		memcpy(&saux8, buff, 1);
-		memcpy(&aux16, &buff[1], 2);
-		vIn = (float)aux16 / 1000;
-
-		if (FAIL == i2cMem8Read(dev, TCP_RASP_VOLT, buff, 2))
-		{
-			exit(1);
-		}
-		memcpy(&aux16, buff, 2);
-		vRasp = (float)aux16 / 1000;
 
 		if (FAIL == i2cMem8Read(dev, REVISION_MAJOR_MEM_ADD, buff, 2))
 		{
@@ -656,8 +644,7 @@ int doBoard(int argc, char *argv[])
 		printf("ADC: ARC = %d, SPS1 = %d, SPS2 = %d, Card Type = %d\n", reinit,
 		(int)sps[0], (int)sps[1], (int)cardType);
 #endif		
-		printf("Vin %0.3fV, Vrasp %0.3fV, CPU Temp %dC\n", vIn, vRasp,
-			(int)saux8);
+		printf("CPU Temp %dC\n", (int)saux8);
 
 	}
 #ifdef DEBUG_ADS	
