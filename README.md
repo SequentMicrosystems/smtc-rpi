@@ -1,6 +1,8 @@
 
 [![smtc-rpi](readmeres/sequent%20.jpg)](https://www.sequentmicrosystems.com)
 
+[![smtc-rpi](readmeres/8-thermo.webp)]([https://www.sequentmicrosystems.com/products/eight-thermocouples-daq-8-layer-stackable-hat-for-raspberry-pi)]
+
 # smtc-rpi
 
 
