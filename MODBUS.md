@@ -12,7 +12,7 @@ Example:
 ```
 Set Modbus RTU , Baudrate: 9600bps, 1 Stop Bit,  parity: None, slave address offset: 1
 ```bash
-~$ smtc -h rs485wr
+~$ smtc -h cfg485rd
 ```
 display the full set of options
 
