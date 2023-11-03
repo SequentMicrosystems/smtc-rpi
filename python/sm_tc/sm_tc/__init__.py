@@ -1,4 +1,5 @@
 import smbus2
+import struct
 
 __version__ = "1.0.1"
 _CARD_BASE_ADDRESS = 0x16
@@ -68,12 +69,13 @@ class SMtc:
             raise ValueError('Invalid input channel number number must be [1..8]!')
         bus = smbus2.SMBus(self._i2c_bus_no)
         try:
-            val = bus.read_word_data(self._hw_address_, _TCP_VAL1_ADD + (channel - 1) * _TEMP_SIZE_BYTES)
+            buff = bus.read_i2c_block_data(self._hw_address_, _TCP_VAL1_ADD + (channel - 1) * _TEMP_SIZE_BYTES, 2)
+            val = struct.unpack('h', bytearray(buff))
         except Exception as e:
             bus.close()
             raise Exception("Fail to read with exception " + str(e))
         bus.close()
-        return val / _TEMP_SCALE_FACTOR
+        return val[0] / _TEMP_SCALE_FACTOR
 
     def print_sensor_type(self, channel):
         print(_TC_TYPES[self.get_sensor_type(channel)])
