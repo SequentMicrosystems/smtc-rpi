@@ -12,6 +12,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <semaphore.h>
 
 #include "smtc.h"
 #include "comm.h"
@@ -22,9 +25,10 @@
 
 #define VERSION_BASE	(int)1
 #define VERSION_MAJOR	(int)0
-#define VERSION_MINOR	(int)1
+#define VERSION_MINOR	(int)2
 
 #define UNUSED(X) (void)X      /* To avoid gcc/g++ warnings */
+#define THREAD_SAFE
 
 void usage(void);
 const char *tcTypes[TC_TYPE_T + 1] = {"B(0)", "E(1)", "J(2)", "K(3)", "N(4)",
@@ -820,6 +824,11 @@ int main(int argc, char *argv[])
 		usage();
 		return -1;
 	}
+#ifdef THREAD_SAFE
+	sem_t* SMTC_SEM = sem_open("/SMTC_SEM", O_CREAT);
+	int semVal = 2;
+	sem_wait(SMTC_SEM);
+#endif
 	while (NULL != gCmdArray[i])
 	{
 		if ( (gCmdArray[i]->name != NULL) && (gCmdArray[i]->namePos < argc))
@@ -844,6 +853,13 @@ int main(int argc, char *argv[])
 						printf("%s", gCmdArray[i]->usage2);
 					}
 				}
+#ifdef THREAD_SAFE
+				sem_getvalue(SMTC_SEM, &semVal);
+				if(semVal < 1)
+				{
+				sem_post(SMTC_SEM);
+				}
+#endif				
 				return ret;
 			}
 		}
@@ -851,6 +867,12 @@ int main(int argc, char *argv[])
 	}
 	printf("Invalid command option\n");
 	usage();
-
+#ifdef THREAD_SAFE	
+	sem_getvalue(SMTC_SEM, &semVal);
+	if(semVal < 1)
+	{
+		sem_post(SMTC_SEM);
+	}
+#endif
 	return -1;
 }
