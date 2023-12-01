@@ -66,4 +66,3 @@ More usage example in the [examples](examples/) folder
   * *channel*: The input channel number 1 to 8
 * Returns
   * Temperature in degree Celsious 
-# sm_tc
