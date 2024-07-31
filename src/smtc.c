@@ -25,7 +25,7 @@
 
 #define VERSION_BASE	(int)1
 #define VERSION_MAJOR	(int)0
-#define VERSION_MINOR	(int)2
+#define VERSION_MINOR	(int)3
 
 #define UNUSED(X) (void)X      /* To avoid gcc/g++ warnings */
 #define THREAD_SAFE
@@ -112,6 +112,20 @@ const CliCmdType CMD_SNS_TYPE_WRITE =
 		"\tUsage:      smtc <id> stypewr <channel> <type> \n", "",
 		"\tExample:    smtc 0 stypewr 1 1; Set the type of sensor for channel 1 on the board #0 to thermocouple E \n"};
 
+int doFiltSizeRd(int argc, char *argv[]);
+const CliCmdType CMD_FILT_SIZE_READ =
+	{"fszrd", 2, &doFiltSizeRd,
+		"\tfszrd:    Display moving averaging filter number of samples \n",
+		"\tUsage:      smtc <id> fszrd \n", "",
+		"\tExample:    smtc 0 fszrd ; Display moving averaging filter number of samples\n"};
+
+int doFiltSizeWrite(int argc, char *argv[]);
+const CliCmdType CMD_FILT_SIZE_WRITE =
+	{"fszwr", 2, &doFiltSizeWrite,
+		"\tfszwr:    Set the moving average filter size or number of samples \n",
+		"\tUsage:      smtc <id> fszwr <value> \n", "",
+		"\tExample:    smtc 0 fszwr 10; Set the moving average filter size or number of samples to 10\n"};
+
 char *warranty =
 	"	       Copyright (c) 2016-2023 Sequent Microsystems\n"
 		"                                                             \n"
@@ -137,6 +151,7 @@ const CliCmdType *gCmdArray[] = {&CMD_HELP, &CMD_WAR, &CMD_LIST, &CMD_VERSION,
 	//&CMD_CALIB,
 	//&CMD_CALIB_RST,
 	&CMD_RS485_READ, &CMD_RS485_WRITE, &CMD_SNS_TYPE_READ, &CMD_SNS_TYPE_WRITE,
+	&CMD_FILT_SIZE_READ, &CMD_FILT_SIZE_WRITE,
 	NULL}; //null terminated array of cli structure pointers
 
 int doBoardInit(int stack)
@@ -792,6 +807,70 @@ int doSnsTypeWrite(int argc, char *argv[])
 	return OK;
 }
 
+int doFiltSizeRd(int argc, char *argv[])
+{
+	int dev = 0;
+	u8 buff;
+
+	dev = doBoardInit(atoi(argv[1]));
+	if (dev <= 0)
+	{
+		return ERROR;
+	}
+
+	if (argc == 3)
+	{
+		if (FAIL == i2cMem8Read(dev, I2C_MAV_FILT_SIZE, &buff, 1))
+		{
+			printf("Fail to read!\n");
+			return ERROR;
+		}
+
+		printf("%d\n", (int)buff);
+	}
+	else
+	{
+		return ARG_CNT_ERR;
+	}
+	return OK;
+}
+
+int doFiltSizeWrite(int argc, char *argv[])
+{
+	int dev = 0;
+	int val = 0;
+	u8 buff;
+
+	dev = doBoardInit(atoi(argv[1]));
+	if (dev <= 0)
+	{
+		return ERROR;
+	}
+
+	if (argc == 4)
+	{
+		val = atoi(argv[3]);
+		if (val < 1 || val > 40)
+		{
+			printf("Invalid filter size value [1..40]\n");
+			return ERROR;
+		}
+		buff = 0xff & val;
+		if (FAIL == i2cMem8Write(dev, I2C_MAV_FILT_SIZE, &buff, 1))
+		{
+			printf("Fail to write!\n");
+			return ERROR;
+		}
+
+		printf("Done\n");
+	}
+	else
+	{
+		return ARG_CNT_ERR;
+	}
+	return OK;
+}
+
 void usage(void)
 {
 	int i = 0;
@@ -825,9 +904,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 #ifdef THREAD_SAFE
-	sem_t* SMTC_SEM = sem_open("/SMTC_SEM", O_CREAT);
+	sem_t *semaphore = sem_open("/SMI2C_SEM", O_CREAT);
 	int semVal = 2;
-	sem_wait(SMTC_SEM);
+	sem_wait(semaphore);
 #endif
 	while (NULL != gCmdArray[i])
 	{
@@ -854,12 +933,12 @@ int main(int argc, char *argv[])
 					}
 				}
 #ifdef THREAD_SAFE
-				sem_getvalue(SMTC_SEM, &semVal);
-				if(semVal < 1)
+				sem_getvalue(semaphore, &semVal);
+				if (semVal < 1)
 				{
-				sem_post(SMTC_SEM);
+					sem_post(semaphore);
 				}
-#endif				
+#endif
 				return ret;
 			}
 		}
@@ -867,11 +946,11 @@ int main(int argc, char *argv[])
 	}
 	printf("Invalid command option\n");
 	usage();
-#ifdef THREAD_SAFE	
-	sem_getvalue(SMTC_SEM, &semVal);
-	if(semVal < 1)
+#ifdef THREAD_SAFE
+	sem_getvalue(semaphore, &semVal);
+	if (semVal < 1)
 	{
-		sem_post(SMTC_SEM);
+		sem_post(semaphore);
 	}
 #endif
 	return -1;
