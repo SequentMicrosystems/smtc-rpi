@@ -5,29 +5,10 @@ This is the python library to control the [Eight Thermocouples DAQ 8-Layer Stack
 ## Install
 
 ```bash
-~$ sudo apt-get update
-~$ sudo apt-get install build-essential python-pip python-dev python-smbus git
-~$ git clone https://github.com/SequentMicrosystems/smtc-rpi.git
-~$ cd smtc-rpi/python/sm_tc/
-~/smtc-rpi/python/sm_tc$ sudo python setup.py install
+sudo pip install SMtc
 ```
-If you use python3.x repace the last line with:
-```
-~/smtc-rpi/python/sm_tc$ sudo python3 setup.py install
-```
-## Update
 
-```bash
-~$ cd smtc-rpi/
-~/smtc-rpi$ git pull
-~$ cd smtc-rpi/python/sm_tc/
-~/smtc-rpi/python/sm_tc$ sudo python setup.py install
-```
-If you use python3.x repace the last line with:
-```
-~/smtc-rpi/python/sm_tc$ sudo python3 setup.py install
-```
-## Usage example
+## Usage
 
 ```bash
 ~$ python
