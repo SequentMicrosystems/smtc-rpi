@@ -51,6 +51,8 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+smtc
+
 #python build dirs
 
 /python/build/

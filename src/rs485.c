@@ -7,50 +7,6 @@
 #include "comm.h"
 
 
-int cfg485Set(int dev, u8 mode, u32 baud, u8 stopB, u8 parity, u8 add)
-{
-	ModbusSetingsType settings;
-	u8 buff[5];
-
-	if (baud > 921600 || baud < 1200)
-	{
-		printf("Invalid RS485 Baudrate [1200, 921600]!\n");
-		return ERROR;
-	}
-	if (mode > 1)
-	{
-		printf("Invalid RS485 mode : 0 = disable, 1= Modbus RTU (Slave)!\n");
-		return ERROR;
-	}
-	if (stopB < 1 || stopB > 2)
-	{
-		printf("Invalid RS485 stop bits [1, 2]!\n");
-		return ERROR;
-	}
-	if (parity > 2)
-	{
-		printf("Invalid RS485 parity 0 = none; 1 = even; 2 = odd! \n");
-		return ERROR;
-	}
-	if (add < 1)
-	{
-		printf("Invalid MODBUS device address: [1, 255]!\n");
-	}
-	settings.mbBaud = baud;
-	settings.mbType = mode;
-	settings.mbParity = parity;
-	settings.mbStopB = stopB;
-	settings.add = add;
-
-	memcpy(buff, &settings, sizeof(ModbusSetingsType));
-	if (OK != i2cMem8Write(dev, I2C_MODBUS_SETINGS_ADD, buff, 5))
-	{
-		printf("Fail to write RS485 settings!\n");
-		return ERROR;
-	}
-	return OK;
-}
-
 int cfg485Get(int dev)
 {
 	ModbusSetingsType settings;
@@ -110,40 +66,80 @@ const CliCmdType CMD_RS485_WRITE =
 		2,
 		&doRs485Write,
 		"\tcfg485wr:    Write the RS485 communication settings\n",
-		"\tUsage:      smtc <id> cfg485wr <mode> <baudrate> <stopBits> <parity> <slaveAddr>\n",
+		"\tUsage:       smtc <id> cfg485wr <mode> <baudrate> <stopBits> <parity> <slaveAddr>\n",
 		"",
-		"\tExample:		 smtc 0 cfg485wr 1 9600 1 0 1; Write the RS485 settings on Board #0 \n\t\t\t(mode = Modbus RTU; baudrate = 9600 bps; stop bits one; parity none; modbus slave address = 1)\n"};
+		"\tExample:     smtc 0 cfg485wr 1 9600 1 0 1; Write the RS485 settings on Board #0 \n\t\t\t(mode = Modbus RTU; baudrate = 9600 bps; stop bits one; parity none; modbus slave address = 1)\n"
+		"\tExample 2:   smtc 0 cfg485wr 0; Disable modbus on Board #0\n"
+	};
 
 int doRs485Write(int argc, char *argv[])
 {
-	int dev = 0;
-	u8 mode = 0;
-	u32 baud = 1200;
-	u8 stopB = 1;
-	u8 parity = 0;
-	u8 add = 0;
-	
-	dev = doBoardInit(atoi(argv[1]));
+	if (argc < 4)
+	{
+		return ARG_CNT_ERR;
+	}
+
+	ModbusSetingsType settings;
+	int aux = atoi(argv[3]); // Mode
+	if (aux == 0) // Disable modbus and free the RS485 for Raspberry usage
+	{
+		settings.mbType = 0;
+		settings.mbBaud = 38400;
+		settings.mbStopB = 1;
+		settings.mbParity = 0;
+		settings.add = 1;
+	}
+	else //  enable the modbus and we need all the parameters
+	{
+		if (argc != 8)
+		{
+			return ARG_CNT_ERR;
+		}
+		if (aux != 1)
+		{
+			printf("Mode must be [0/1]\n");
+			return ERROR;
+		}
+		settings.mbType = 1;
+		aux = atoi(argv[4]); // Baudrate
+		if (aux < 1200 || aux > 921600)
+		{
+			printf("Baudrate must be [1200..921600]\n");
+			return ERROR;
+		}
+		settings.mbBaud = aux;
+		aux = atoi(argv[5]); // Stop bits
+		if (aux < 1 || aux > 2)
+		{
+			printf("Stop bits must be [1/2]\n");
+			return ERROR;
+		}
+		settings.mbStopB = aux;
+		aux = atoi(argv[6]); // Parity
+		if (aux < 0 || aux > 2)
+		{
+			printf("Parity must be [0/1/2]\n");
+			return ERROR;
+		}
+		settings.mbParity = aux;
+		aux = atoi(argv[7]); // Modbus ID
+		if (aux < 1 || aux > 254)
+		{
+			printf("Modbus ID must be [1..254]\n");
+			return ERROR;
+		}
+		settings.add = aux;
+	}
+	int dev = doBoardInit(atoi(argv[1]));
 	if (dev <= 0)
 	{
 		return ERROR;
 	}
-	if (argc == 8)
+	if (OK != i2cMem8Write(dev, I2C_MODBUS_SETINGS_ADD, (uint8_t*)&settings, sizeof(ModbusSetingsType)))
 	{
-		mode = 0xff & atoi(argv[3]);
-		baud = atoi(argv[4]);
-		stopB = 0xff & atoi(argv[5]);
-		parity = 0xff & atoi(argv[6]);
-		add = 0xff & atoi(argv[7]);
-		if (OK != cfg485Set(dev, mode, baud, stopB, parity, add))
-		{
-			return ERROR;
-		}
-		printf("done\n");
-	}
-	else
-	{
-		return ARG_CNT_ERR;
+		printf("Fail to write RS485 settings!\n");
+		return ERROR;
 	}
 	return OK;
 }
+
