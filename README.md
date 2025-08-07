@@ -10,26 +10,28 @@ This is the command to control [ Eight Thermocouples DAQ 8-Layer Stackable Card 
 
 Don't forget to enable I2C communication:
 ```bash
-~$ sudo raspi-config
+sudo raspi-config
 ```
 
 ## Install
 
 ```bash
-~$ git clone https://github.com/SequentMicrosystems/smtc-rpi.git
-~$ cd smtc-rpi/
-~/smtc-rpi$ sudo make install
+cd
+git clone https://github.com/SequentMicrosystems/smtc-rpi.git
+cd smtc-rpi/
+sudo make install
 ```
 ## Usage
 Now you can access all the functions of the card through the command "smtc". Use -h option for help:
 ```bash
-~$ smtc -h
+smtc -h
 ```
 ## Update
-If you clone the repository any update can be made with the following commands:
+If you clone the repository, any update can be made with the following commands:
 
 ```bash
-~$ cd smtc-rpi/  
-~/smtc-rpi$ git pull
-~/smtc-rpi$ sudo make install
+cd
+cd smtc-rpi/  
+git pull
+sudo make install
 ```  
