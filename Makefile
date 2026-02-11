@@ -35,7 +35,7 @@ install: smtc
 	$Q echo "[Install]"
 	$Q cp smtc		$(DESTDIR)$(PREFIX)/bin
 ifneq ($(WIRINGPI_SUID),0)
-	$Q chown root.root	$(DESTDIR)$(PREFIX)/bin/smtc
+	$Q chown root:root	$(DESTDIR)$(PREFIX)/bin/smtc
 	$Q chmod 4755		$(DESTDIR)$(PREFIX)/bin/smtc
 endif
 #	$Q mkdir -p		$(DESTDIR)$(PREFIX)/man/man1

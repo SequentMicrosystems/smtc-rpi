@@ -904,7 +904,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 #ifdef THREAD_SAFE
-	sem_t *semaphore = sem_open("/SMI2C_SEM", O_CREAT);
+	sem_t *semaphore = sem_open("/SMI2C_SEM", O_CREAT, 0666, 1);
 	int semVal = 2;
 	sem_wait(semaphore);
 #endif
